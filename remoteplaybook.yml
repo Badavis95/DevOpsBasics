@@ -1,0 +1,32 @@
+---
+- hosts: all
+  tasks: 
+  
+  - name: Copy Dockerfile into targeted machine
+    copy:
+     src: Dockerfile
+     dest: .
+    
+  - name: Copy warfile into targeted machine
+    copy:
+     src: webapp.war
+     dest: .
+     
+  - name: stop the running container
+    command: docker stop customcontainer
+    ignore_errors: true
+  
+  - name: Remove the running container
+    command: docker rm customcontainer
+    ignore_errors: true
+    
+  - name: Remove the running image
+    command: docker rmi customimage
+    ignore_errors: true
+    
+  - name: Create the image from docker file.
+    command: docker build -t customimage .
+    
+  - name: Create and run container
+    command: docker run  -d -p 8080:8080 --name customcontainer customimage
+
